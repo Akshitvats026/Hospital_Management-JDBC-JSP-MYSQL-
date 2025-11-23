@@ -1,33 +1,60 @@
+<%@ page import="java.sql.*" %>
+<%@ page import="java.util.*" %>
 <%@ include file="dbconnect.jsp" %>
-<%@ page import="java.util.*, model.Patient" %>
 <html>
 <head>
     <title>Patients List</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <div class="main-container">
     <h2>Patient List</h2>
 
-    <table>
+    <table border="1" cellpadding="10">
         <tr>
-            <th>ID</th><th>Name</th><th>Age</th><th>Gender</th><th>Phone</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Gender</th>
+            <th>Phone</th>
         </tr>
 
         <%
-            List<Patient> list = (List<Patient>) request.getAttribute("patients");
-            if (list != null) {
-                for (Patient p : list) {
+            Connection con = null;
+            Statement stmt = null;
+            ResultSet rs = null;
+
+            try {
+                // Database connection (update credentials if needed)
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                con = DriverManager.getConnection("jdbc:mysql://localhost:3306/hospital_db", "root", "Radhekarna@01");
+
+                String query = "SELECT name, age, gender, phone FROM patient";
+                stmt = con.createStatement();
+                rs = stmt.executeQuery(query);
+
+                while(rs.next()) {
+                    String name = rs.getString("name");
+                    int age = rs.getInt("age");
+                    String gender = rs.getString("gender");
+                    String phone = rs.getString("phone");
         %>
         <tr>
-            <td><%= p.getId() %></td>
-            <td><%= p.getName() %></td>
-            <td><%= p.getAge() %></td>
-            <td><%= p.getGender() %></td>
-            <td><%= p.getPhone() %></td>
+            <td><%= name %></td>
+            <td><%= age %></td>
+            <td><%= gender %></td>
+            <td><%= phone %></td>
         </tr>
-        <% } } %>
+        <%
+                }
+            } catch(Exception e) {
+                out.println("<tr><td colspan='5'>Error: " + e.getMessage() + "</td></tr>");
+            } finally {
+                try { if(rs!=null) rs.close(); } catch(Exception e){}
+                try { if(stmt!=null) stmt.close(); } catch(Exception e){}
+                try { if(con!=null) con.close(); } catch(Exception e){}
+            }
+        %>
 
     </table>
 </div>

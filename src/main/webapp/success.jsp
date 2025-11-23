@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>Success</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
